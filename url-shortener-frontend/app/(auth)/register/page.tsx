@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
@@ -42,7 +42,7 @@ export default function RegisterPage() {
         },
     });
 
-    const watchPassword = form.watch('password');
+    const watchPassword = useWatch({ control: form.control, name: 'password' });
 
     const onSubmit = async (values: RegisterFormValues) => {
         setGlobalError('');
@@ -52,6 +52,7 @@ export default function RegisterPage() {
             loginAction(user, accessToken);
             router.push('/dashboard');
         } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             let errorMsg = 'Đăng ký thất bại. Vui lòng kiểm tra lại.';
             const backendMsg = err.response?.data?.message;

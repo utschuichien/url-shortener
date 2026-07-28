@@ -51,6 +51,7 @@ export function useCreateUrl() {
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
         onError: (error) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             const msg = err.response?.data?.message;
             const errorMessage = Array.isArray(msg) ? msg[0] : msg;
@@ -83,6 +84,7 @@ export function useDeleteUrl() {
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
         onError: (error) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi xóa URL');
         },
@@ -102,6 +104,7 @@ export function useUpdateUrl() {
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
         onError: (error) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             const msg = err.response?.data?.message;
             const errorMessage = Array.isArray(msg) ? msg[0] : msg;

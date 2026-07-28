@@ -44,6 +44,7 @@ export default function LoginPage() {
             loginAction(user, accessToken);
             router.push('/dashboard');
         } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const err = error as any;
             let errorMsg = 'Đăng nhập thất bại. Vui lòng kiểm tra lại.';
             const backendMsg = err.response?.data?.message;
