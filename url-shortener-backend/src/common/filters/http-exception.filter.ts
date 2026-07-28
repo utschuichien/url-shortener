@@ -27,8 +27,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-        const res = exceptionResponse as Record<string, any>;
-        message = res.message || exception.message;
+        const res = exceptionResponse as Record<string, unknown>;
+        message = (res.message as string) || exception.message;
       }
     } else {
       // Log unexpected errors but don't expose details to client

@@ -10,7 +10,6 @@ import {
   Put,
   Redirect,
   Req,
-  Res,
   UseGuards,
   Query,
 } from '@nestjs/common';
@@ -45,7 +44,7 @@ export class UrlsController {
     if (authHeader?.startsWith('Bearer ')) {
       try {
         const token = authHeader.substring(7);
-        const payload = this.jwtService.verify(token, {
+        const payload = this.jwtService.verify<{ sub: number }>(token, {
           secret: this.configService.get<string>('JWT_SECRET'),
         });
         userId = payload.sub;

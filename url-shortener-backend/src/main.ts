@@ -27,4 +27,6 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3001);
   await app.listen(port);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Lỗi khởi động server:', err);
+});
