@@ -42,6 +42,8 @@ export default function RegisterPage() {
         },
     });
 
+    const watchPassword = form.watch('password');
+
     const onSubmit = async (values: RegisterFormValues) => {
         setGlobalError('');
         try {
@@ -49,9 +51,10 @@ export default function RegisterPage() {
             const { user, accessToken } = response.data;
             loginAction(user, accessToken);
             router.push('/dashboard');
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as any;
             let errorMsg = 'Đăng ký thất bại. Vui lòng kiểm tra lại.';
-            const backendMsg = error.response?.data?.message;
+            const backendMsg = err.response?.data?.message;
             if (backendMsg) {
                 errorMsg = Array.isArray(backendMsg) ? backendMsg.join(', ') : backendMsg;
             }
@@ -129,7 +132,7 @@ export default function RegisterPage() {
                             </p>
                         )}
                         
-                        {!form.formState.errors.password && form.watch('password').length > 0 && (
+                        {!form.formState.errors.password && watchPassword.length > 0 && (
                             <div className="mt-2 text-center">
                                 <div className="h-3 w-full bg-green-400 border-2 border-foreground rounded-full mb-1"></div>
                                 <span className="text-xs font-semibold uppercase">Mạnh</span>

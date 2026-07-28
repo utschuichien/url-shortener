@@ -50,8 +50,9 @@ export function useCreateUrl() {
             toast.success('Rút gọn URL thành công!');
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
-        onError: (error: any) => {
-            const msg = error.response?.data?.message;
+        onError: (error) => {
+            const err = error as any;
+            const msg = err.response?.data?.message;
             const errorMessage = Array.isArray(msg) ? msg[0] : msg;
             toast.error(errorMessage || 'Có lỗi xảy ra khi rút gọn URL');
         },
@@ -81,8 +82,9 @@ export function useDeleteUrl() {
             toast.success('Xóa URL thành công!');
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa URL');
+        onError: (error) => {
+            const err = error as any;
+            toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi xóa URL');
         },
     });
 }
@@ -99,8 +101,9 @@ export function useUpdateUrl() {
             toast.success('Cập nhật URL thành công!');
             await queryClient.invalidateQueries({ queryKey: ['urls'] });
         },
-        onError: (error: any) => {
-            const msg = error.response?.data?.message;
+        onError: (error) => {
+            const err = error as any;
+            const msg = err.response?.data?.message;
             const errorMessage = Array.isArray(msg) ? msg[0] : msg;
             toast.error(errorMessage || 'Có lỗi xảy ra khi cập nhật URL');
         },

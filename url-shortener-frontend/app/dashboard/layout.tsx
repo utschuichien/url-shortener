@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Link2, LogOut, BarChart3, User, Menu } from 'lucide-react';
+import { LayoutDashboard, Link2, LogOut, User, Menu } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();

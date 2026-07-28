@@ -15,12 +15,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const userData = JSON.parse(userStr);
                 login(userData, token);
-            } catch (e) {
+            } catch {
                 logout();
             }
         } else {
             logout();
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsInitialized(true);
     }, [login, logout]);
 

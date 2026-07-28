@@ -12,6 +12,7 @@ export function EditUrlModal({ isOpen, onClose, onConfirm, initialUrl, isPending
     const [url, setUrl] = useState(initialUrl);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUrl(initialUrl);
     }, [initialUrl, isOpen]);
 

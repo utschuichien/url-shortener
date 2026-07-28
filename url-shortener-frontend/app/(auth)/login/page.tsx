@@ -43,9 +43,10 @@ export default function LoginPage() {
             const { user, accessToken } = response.data;
             loginAction(user, accessToken);
             router.push('/dashboard');
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as any;
             let errorMsg = 'Đăng nhập thất bại. Vui lòng kiểm tra lại.';
-            const backendMsg = error.response?.data?.message;
+            const backendMsg = err.response?.data?.message;
             if (backendMsg) {
                 errorMsg = Array.isArray(backendMsg) ? backendMsg.join(', ') : backendMsg;
             }
