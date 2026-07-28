@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  urls      Url[]    
+
+  @@map("users") 
+}
+
+model Url {
+  id          Int      @id @default(autoincrement())
+  userId      Int?     @map("user_id") 
+  shortCode   String   @unique @map("short_code") @db.VarChar(15)
+  originalUrl String   @map("original_url") @db.Text
+  isDeleted   Boolean  @default(false) @map("is_deleted")
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User?    @relation(fields: [userId], references: [id])
+  clicks      Click[]  
+  @@index([shortCode])
+  @@map("urls")
+}
+
+model Click {
+  id        Int      @id @default(autoincrement())
+  urlId     Int      @map("url_id")
+  ipAddress String?  @map("ip_address") @db.VarChar(45)
+  userAgent String?  @map("user_agent") @db.VarChar(255)
+  clickedAt DateTime @default(now()) @map("clicked_at")
+  url       Url      @relation(fields: [urlId], references: [id])
+
+  @@map("clicks")
+}

@@ -1,0 +1,14 @@
+# Node
+node_modules/
+dist/
+.env
+
+# MacOS
+.DS_Store
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Vercel
+.vercel
