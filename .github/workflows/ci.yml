@@ -9,6 +9,9 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./url-shortener-backend
     
     steps:
       - name: Checkout code
