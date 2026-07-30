@@ -27,15 +27,17 @@ jobs:
           # port: ${{ secrets.VPS_PORT }} # nếu không dùng cổng 22
 
           script: |
+            # Khởi tạo đường dẫn tuyệt đối vào thư mục cá nhân của người dùng
+            DEPLOY_DIR="$HOME/url-shortener"
+
             # Kiểm tra xem thư mục đã tồn tại chưa
-            if [ ! -d "${{ secrets.DEPLOY_DIR }}" ]; then
+            if [ ! -d "$DEPLOY_DIR" ]; then
               echo "🔄 Thư mục chưa tồn tại. Đang tự động Clone mã nguồn lần đầu..."
-              # Tạo thư mục cha nếu chưa có, đề phòng lỗi
-              mkdir -p $(dirname ${{ secrets.DEPLOY_DIR }})
-              git clone https://oauth2:$GITHUB_TOKEN@github.com/${{ github.repository }}.git ${{ secrets.DEPLOY_DIR }}
-              cd ${{ secrets.DEPLOY_DIR }}
+              mkdir -p "$DEPLOY_DIR"
+              git clone https://oauth2:$GITHUB_TOKEN@github.com/${{ github.repository }}.git "$DEPLOY_DIR"
+              cd "$DEPLOY_DIR"
             else
-              cd ${{ secrets.DEPLOY_DIR }}
+              cd "$DEPLOY_DIR"
               echo "🔄 Đang cập nhật mã nguồn..."
               git fetch --all
               git checkout main
