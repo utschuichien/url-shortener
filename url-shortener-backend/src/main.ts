@@ -12,12 +12,12 @@ async function bootstrap() {
   // Enable CORS for frontend access
   app.enableCors();
 
-  // Global validation pipe — auto-validates DTOs via class-validator
+  // Global validation pipe — auto-validates DTOs via class-validator 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // Strip properties not in DTO
+      whitelist: true, // Strip properties not in DTO
       forbidNonWhitelisted: true, // Throw if extra properties sent
-      transform: true,            // Auto-transform payloads to DTO instances
+      transform: true, // Auto-transform payloads to DTO instances
     }),
   );
 

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-
 
 describe('URL Shortener (E2E) - Race Condition', () => {
   let app: INestApplication;
@@ -53,8 +52,8 @@ describe('URL Shortener (E2E) - Race Condition', () => {
       request(app.getHttpServer()).post(endpoint).send(payload),
     ]);
 
-    const successRes = [res1, res2].find(r => r.status === 201);
-    const failRes = [res1, res2].find(r => r.status !== 201);
+    const successRes = [res1, res2].find((r) => r.status === 201);
+    const failRes = [res1, res2].find((r) => r.status !== 201);
 
     expect(successRes).toBeDefined();
     expect(failRes).toBeDefined();

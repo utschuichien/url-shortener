@@ -20,7 +20,7 @@ export class UrlsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) { }
+  ) {}
 
   private encodeBase62(num: number): string {
     const ALPHABET =
@@ -36,13 +36,18 @@ export class UrlsService {
     return encoded;
   }
 
-  async createShortUrl(originalUrl: string, userId?: number, customAlias?: string) {
+  async createShortUrl(
+    originalUrl: string,
+    userId?: number,
+    customAlias?: string,
+  ) {
     const reserved = ['admin', 'api', 'login', 'dashboard', 'static', 'assets'];
     if (customAlias && reserved.includes(customAlias.toLowerCase())) {
-      throw new BadRequestException('Alias này không được phép sử dụng do bảo mật.');
+      throw new BadRequestException(
+        'Alias này không được phép sử dụng do bảo mật.',
+      );
     }
     if (customAlias) {
-
       try {
         return await this.prisma.url.create({
           data: {
@@ -64,7 +69,6 @@ export class UrlsService {
         throw error;
       }
     }
-
 
     return this.prisma.$transaction(async (tx) => {
       const temp = await tx.url.create({
@@ -90,7 +94,7 @@ export class UrlsService {
 
   async findAllByUser(userId: number, page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-    
+
     const [urls, total] = await this.prisma.$transaction([
       this.prisma.url.findMany({
         where: {
@@ -125,13 +129,15 @@ export class UrlsService {
       originalUrl: string;
       id: number;
     }>(shortCode);
-    
+
     if (cacheData) {
-      this.logger.log(`[CACHE HIT] Lấy dữ liệu từ Redis cho mã: ${shortCode}`);
+      // Bỏ log ở đây để không làm nghẽn Terminal khi test RPS
       return cacheData;
     }
 
-    this.logger.log(`[CACHE MISS] Đọc từ Database và lưu vào Redis cho mã: ${shortCode}`);
+    this.logger.log(
+      `[CACHE MISS] Đọc từ Database và lưu vào Redis cho mã: ${shortCode}`,
+    );
     const urlRecord = await this.prisma.url.findUnique({
       where: { shortCode },
     });
@@ -139,10 +145,14 @@ export class UrlsService {
     if (!urlRecord || urlRecord.isDeleted) {
       throw new NotFoundException('Mã rút gọn không tồn tại hoặc đã bị xóa');
     }
-    await this.cacheManager.set(shortCode, {
-      originalUrl: urlRecord.originalUrl,
-      id: urlRecord.id,
-    });
+    await this.cacheManager.set(
+      shortCode,
+      {
+        originalUrl: urlRecord.originalUrl,
+        id: urlRecord.id,
+      },
+      60000,
+    ); // 60 seconds explicit TTL
     return { originalUrl: urlRecord.originalUrl, id: urlRecord.id };
   }
 
@@ -246,9 +256,10 @@ export class UrlsService {
 
     const clicksByDate = clicksByDateRaw.map((item) => {
       // Prisma $queryRaw DATE() có thể trả về string hoặc Date object
-      const dateString = item.date instanceof Date
-        ? item.date.toISOString().split('T')[0]
-        : String(item.date).split('T')[0];
+      const dateString =
+        item.date instanceof Date
+          ? item.date.toISOString().split('T')[0]
+          : String(item.date).split('T')[0];
 
       return {
         date: dateString,

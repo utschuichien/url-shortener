@@ -1,9 +1,15 @@
-name: Backend-CI
+name: Backend CI
 
 on:
-  pull_request:          
+  pull_request:
+    paths:
+      - 'url-shortener-backend/**'
+      - '.github/workflows/backend-ci.yml'
   push:
-    branches: [ "main", "master" ] 
+    branches: [ "main", "master" ]
+    paths:
+      - 'url-shortener-backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
   ci:
@@ -20,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: './url-shortener-backend/package-lock.json'
       
@@ -38,5 +44,5 @@ jobs:
       - name: Run Tests
         run: npm run test
         
-      - name: Test Build (Verify TypeScript compilation)
+      - name: Build (TypeScript compilation)
         run: npm run build

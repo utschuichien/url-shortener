@@ -1,38 +1,47 @@
-name: Frontend-CI
+name: Frontend CI
 
 on:
-    pull_request:
-    push:
-        branches: ['main', 'master']
+  pull_request:
+    paths:
+      - 'url-shortener-frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'url-shortener-frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
 concurrency:
-    group: frontend-ci-${{ github.ref }}
-    cancel-in-progress: true
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-    ci:
-        name: Continuous Integration
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./url-shortener-frontend
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./url-shortener-frontend
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 22
-                  cache: 'npm'
-                  cache-dependency-path: './url-shortener-frontend/package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: './url-shortener-frontend/package-lock.json'
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Run ESLint
-              run: npm run lint
-            - name: Type Check
-              run: npm run type-check
+      - name: Run ESLint
+        run: npm run lint
 
-            - name: Test Build (Verify Next.js compilation)
-              run: npm run build
+      - name: Type Check
+        run: npm run type-check 
+
+      - name: Build (Next.js)
+        run: npm run build

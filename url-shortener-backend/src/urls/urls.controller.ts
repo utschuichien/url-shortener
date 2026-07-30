@@ -23,8 +23,8 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ConfigService } from '@nestjs/config';
 import { type Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { UrlClickedEvent } from '../events/url-clicked.event';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Controller('')
 export class UrlsController {
@@ -32,7 +32,7 @@ export class UrlsController {
     private readonly urlsService: UrlsService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly eventEmitter: EventEmitter2,
+    @InjectQueue('clicks-queue') private readonly clicksQueue: Queue,
   ) { }
 
   // Tạo URL — cho phép cả guest lẫn user đã đăng nhập
@@ -86,8 +86,12 @@ export class UrlsController {
   ) {
     const pageNumber = page ? parseInt(page, 10) : 1;
     const limitNumber = limit ? parseInt(limit, 10) : 10;
-    
-    const result = await this.urlsService.findAllByUser(user.userId, pageNumber, limitNumber);
+
+    const result = await this.urlsService.findAllByUser(
+      user.userId,
+      pageNumber,
+      limitNumber,
+    );
     const appUrl = this.configService.get<string>(
       'APP_URL',
       'http://localhost:3000',
@@ -104,7 +108,10 @@ export class UrlsController {
   }
   @UseGuards(JwtAuthGuard)
   @Get('api/urls/:shortCode/stats')
-  async getStats(@Param('shortCode') shortCode: string, @CurrentUser() user: { userId: number }) {
+  async getStats(
+    @Param('shortCode') shortCode: string,
+    @CurrentUser() user: { userId: number },
+  ) {
     const stats = await this.urlsService.getUrlStats(shortCode, user.userId);
 
     return {
@@ -123,10 +130,11 @@ export class UrlsController {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const userAgent = req.headers['user-agent'] || 'unknown';
 
-    this.eventEmitter.emit(
-      'url.clicked',
-      new UrlClickedEvent(id, ip, userAgent),
-    );
+    void this.clicksQueue.add('log-click', {
+      urlId: id,
+      ipAddress: ip,
+      userAgent,
+    });
     return { url: originalUrl, statusCode: HttpStatus.FOUND };
   }
 

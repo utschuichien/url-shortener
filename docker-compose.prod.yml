@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  mysql-prod:
+    image: mysql:8.0
+    container_name: linkflow-mysql-prod
+    restart: unless-stopped
+    environment:
+      # Bắt buộc phải có file .env trên VPS chứa biến MYSQL_ROOT_PASSWORD, nếu không Docker sẽ báo lỗi không chịu chạy
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Vui lòng cấu hình MYSQL_ROOT_PASSWORD trong file .env}
+      MYSQL_DATABASE: url_shortener
+    volumes:
+      - mysql-prod-data:/var/lib/mysql
+    networks:
+      - linkflow-network
+    # Tùy chọn: Expose port 3306 nếu muốn truy cập DB trực tiếp từ ngoài VPS, nếu không thì bỏ đi để bảo mật
+    ports:
+      - "3306:3306"
+    # Kiểm tra xem MySQL đã sẵn sàng nhận kết nối chưa
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis-prod:
+    image: redis:alpine
+    container_name: linkflow-redis-prod
+    restart: unless-stopped
+    volumes:
+      - redis-prod-data:/data
+    networks:
+      - linkflow-network
+
+  url-shortener-backend:
+    build:
+      context: ./url-shortener-backend
+      dockerfile: Dockerfile
+    container_name: linkflow-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      # Bắt buộc phải có trong file .env trên VPS
+      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD:?Vui lòng cấu hình MYSQL_ROOT_PASSWORD trong file .env}@mysql-prod:3306/url_shortener
+      - REDIS_URL=redis://redis-prod:6379
+      - JWT_SECRET=${JWT_SECRET:?Vui lòng cung cấp JWT_SECRET trong file .env}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://linknip.click}
+      - APP_URL=${APP_URL:-https://linknip.click}
+    ports:
+      - "3001:3001"
+    networks:
+      - linkflow-network
+    depends_on:
+      redis-prod:
+        condition: service_started
+      mysql-prod:
+        condition: service_healthy
+
+  url-shortener-frontend:
+    build:
+      context: ./url-shortener-frontend
+      dockerfile: Dockerfile
+    container_name: linkflow-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - BACKEND_URL=http://url-shortener-backend:3001
+    ports:
+      - "3000:3000"
+    networks:
+      - linkflow-network
+    depends_on:
+      - url-shortener-backend
+
+networks:
+  linkflow-network:
+    driver: bridge
+
+volumes:
+  mysql-prod-data:
+  redis-prod-data:
