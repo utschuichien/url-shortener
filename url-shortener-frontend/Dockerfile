@@ -13,6 +13,8 @@ COPY . .
 # Set env to production for build
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
+ARG BACKEND_URL=http://url-shortener-backend:3001
+ENV BACKEND_URL=$BACKEND_URL
 RUN npm run build
 
 # Runner stage
