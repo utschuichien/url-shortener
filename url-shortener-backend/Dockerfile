@@ -41,4 +41,4 @@ USER nestjs
 EXPOSE 3001
 
 # Chạy Migration để tạo các bảng trong DB trước, sau đó mới khởi động Server NestJS
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
