@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -40,8 +40,8 @@ jobs:
               cd "$DEPLOY_DIR"
               echo "🔄 Đang cập nhật mã nguồn..."
               git fetch --all
-              git checkout main
-              git reset --hard origin/main
+              git checkout master
+              git reset --hard origin/master
               git clean -fd
             fi
 
