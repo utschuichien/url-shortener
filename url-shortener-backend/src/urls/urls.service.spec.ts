@@ -162,10 +162,14 @@ describe('UrlsService', () => {
       expect(prismaService.url.findUnique).toHaveBeenCalledWith({
         where: { shortCode: 'dbcode' },
       });
-      expect(cacheManager.set).toHaveBeenCalledWith('dbcode', {
-        originalUrl: 'http://db.com',
-        id: 1,
-      });
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        'dbcode',
+        {
+          originalUrl: 'http://db.com',
+          id: 1,
+        },
+        60000,
+      );
       expect(result).toEqual({ originalUrl: 'http://db.com', id: 1 });
     });
 
