@@ -54,10 +54,10 @@ jobs:
             fi
 
             echo "🏗️ Build và khởi động container..."
-            docker-compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.prod.yml up -d --build
 
             echo "🗄️ Chạy migration Prisma..."
-            docker-compose -f docker-compose.prod.yml exec -T url-shortener-backend npx prisma migrate deploy
+            docker compose -f docker-compose.prod.yml exec -T url-shortener-backend npx prisma migrate deploy
 
             echo "🧹 Dọn dẹp image cũ..."
             docker image prune -f
