@@ -58,6 +58,8 @@ jobs:
             echo "🏗️ Build và khởi động container..."
             docker compose -f docker-compose.prod.yml up -d --build
 
+            echo "🗄️ Chờ 10s để MySQL khởi động hoàn tất mạng lưới..."
+            sleep 10
             echo "🗄️ Chạy migration Prisma..."
             docker compose -f docker-compose.prod.yml exec -T url-shortener-backend npx prisma migrate deploy
 
